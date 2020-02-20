@@ -27,22 +27,29 @@ for i in range(2, n_libraries + 3, 2):
 sorted_libraries = sorted(libraries, key=lambda k: k[0]['sign-up'])
 
 selected_libraries = []
-
+x = -1
 for library in sorted_libraries:
-    time_take = library[0]["sign-up"] + round(library[0]["books"] / library[0]["books-per-day"])
+    x += 1
+    if x == 0:
+        time_take = library[0]["sign-up"] + round(library[0]["books"] / library[0]["books-per-day"])
+    else:
+        time_take = round(library[0]["books"] / library[0]["books-per-day"])
     if time_take <= days_to_scan:
         selected_libraries.append(library)
         days_to_scan -= time_take
     else:
         for i in range(library[0]["books"], 0, -1):
-            time_take = library[0]["sign-up"] + round(len(library[1][:i]) / library[0]["books-per-day"])
+            if x == 0:
+                time_take = library[0]["sign-up"] + round(len(library[1][:i]) / library[0]["books-per-day"])
+            else:
+                time_take = round(len(library[1][:i]) / library[0]["books-per-day"])
             if time_take <= days_to_scan:
                 library_ = [{"library-id": library[0]["library-id"], "books": len(library[1][:i]),
                              "sign-up": library[0]["sign-up"], "books-per-day": library[0]["books-per-day"],
                              "total-value": library[0]["total-value"]}, library[1][:i]]
                 selected_libraries.append(library_)
                 days_to_scan -= time_take
-                continue
+                break
 
 with open(f"output/{file_name}.out", "w") as f:
     f.write(f"{len(selected_libraries)}\n")
