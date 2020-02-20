@@ -9,7 +9,7 @@ def remove_overlap(a, b):
 
 libraries = []
 
-file_name = "f_libraries_of_the_world.txt".strip(".txt")
+file_name = "d_tough_choices.txt".strip(".txt")
 
 data = open(f"data/{file_name}.txt").read().split("\n")
 
@@ -53,6 +53,7 @@ for library in sorted_libraries:
                     "total-value": library[0]["total-value"]}, new_books]
     if time_take <= days_to_scan:
         selected_libraries.append(library)
+        selected_books += library[1]
         days_to_scan -= time_take
     else:
         for i in range(library[0]["books"], 0, -1):
@@ -64,12 +65,16 @@ for library in sorted_libraries:
                 library_ = [{"library-id": library[0]["library-id"], "books": len(library[1][:i]),
                              "sign-up": library[0]["sign-up"], "books-per-day": library[0]["books-per-day"],
                              "total-value": library[0]["total-value"]}, library[1][:i]]
+                if len(library_[1]) == 0:
+                    break
                 selected_libraries.append(library_)
+                selected_books += library_[1]
                 days_to_scan -= time_take
                 break
 
 with open(f"output/{file_name}.out", "w") as f:
-    f.write(f"{len(selected_libraries)}\n")
-    for library in selected_libraries:
-        f.write(f'{library[0]["library-id"]} {library[0]["books"]}\n')
-        f.write(f"{' '.join(list(map(str, library[1])))}\n")
+    if library[0]["books"] > 0:
+        f.write(f"{len(selected_libraries)}\n")
+        for library in selected_libraries:
+            f.write(f'{library[0]["library-id"]} {library[0]["books"]}\n')
+            f.write(f"{' '.join(list(map(str, library[1])))}\n")
