@@ -1,3 +1,12 @@
+def common(a, b):
+    c = [value for value in a if value in b]
+    return c
+
+
+def remove_overlap(a, b):
+    return list(set(a) - set(b))
+
+
 libraries = []
 
 file_name = "f_libraries_of_the_world.txt".strip(".txt")
@@ -16,7 +25,6 @@ for i in range(2, n_libraries + 3, 2):
     library_books = [[book, book_scores[book]] for book in library_books]
     library_books = sorted(library_books, key=lambda k: k[1], reverse=True)
     library_books = [book[0] for book in library_books]
-    # print(library_books)
     for i, book in enumerate(library_books):
         total_value += book_scores[book]
 
@@ -27,13 +35,22 @@ for i in range(2, n_libraries + 3, 2):
 sorted_libraries = sorted(libraries, key=lambda k: k[0]['sign-up'])
 
 selected_libraries = []
+
+selected_books = []
+
 x = -1
 for library in sorted_libraries:
     x += 1
     if x == 0:
         time_take = library[0]["sign-up"] + round(library[0]["books"] / library[0]["books-per-day"])
+        selected_books += library[1]
     else:
-        time_take = round(library[0]["books"] / library[0]["books-per-day"])
+        d = common(selected_books, library[1])
+        new_books = remove_overlap(library[1], d)
+        time_take = round(len(new_books) / library[0]["books-per-day"])
+        library = [{"library-id": library[0]["library-id"], "books": len(new_books),
+                    "sign-up": library[0]["sign-up"], "books-per-day": library[0]["books-per-day"],
+                    "total-value": library[0]["total-value"]}, new_books]
     if time_take <= days_to_scan:
         selected_libraries.append(library)
         days_to_scan -= time_take
